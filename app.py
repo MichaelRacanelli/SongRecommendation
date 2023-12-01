@@ -51,4 +51,6 @@ with st.sidebar:
     st.image(image, caption='Spotify Genres')
     st.header("Image Credit")
     st.text("Photo by David Pupăză Unsplash")
+    
+    
   
