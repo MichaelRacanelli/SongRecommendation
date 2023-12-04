@@ -1,4 +1,3 @@
-import pandas as pd
 from rapidfuzz import process
 import string
 from unidecode import unidecode
