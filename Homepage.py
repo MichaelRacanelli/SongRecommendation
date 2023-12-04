@@ -5,7 +5,7 @@ from search_fuzzy import find_top_matches
 
 image = Image.open('spotify.jpg')
 
-#Create an about widget
+# Create an about widget
 with st.sidebar:
     st.title("We are Group 12 from WatSpeed")
     st.text("And this is our song recommendation app")
@@ -15,7 +15,7 @@ with st.sidebar:
 
 spotify_data = pd.read_csv("spotify_data.csv", index_col=0)
 
-@st.cache_data
+@st.cache_data()
 def perform_fuzzy_matching(user_input, data):
     return find_top_matches(user_input, data)
 
@@ -29,14 +29,13 @@ def main():
     # Placeholder for selected track ID
     selected_track_id = None
 
-    #actions to be performed when the user inputs a song in the search box
+    # Actions to be performed when the user inputs a song in the search box
     if user_input_song:
-        #generate fuzzy matching top results for search input
+        # Generate fuzzy matching top results for search input
         top_results = perform_fuzzy_matching(user_input_song, spotify_data)
-        # top_result = find_top_match(user_input_song, spotify_data)
 
-        #create a list item of clean song, artist, and similarity score for displaying in the selectbox widget
-        clean_results = clean_results = [f"'{result['original_track_name']}' by {result['artist']} | Similarity Score: {result['similarity_score']}" for result in top_results]
+        # Create a list item of clean song, artist, and similarity score for displaying in the selectbox widget
+        clean_results = [f"'{result['original_track_name']}' by {result['artist']} | Similarity Score: {result['similarity_score']}" for result in top_results]
 
         # Display the clean search results as a clickable list with both song and artist names with similarity score
         st.subheader('Select a song:')
@@ -50,7 +49,7 @@ def main():
         if selected_song_index is not None:
             selected_track_id = top_results[selected_song_index]['track_id']
 
-    #display information about the selected song using extracted song ID, can use selected_track_id for input into ML model or to reference selected song in the dataframe   
+    # Display information about the selected song using extracted song ID, can use selected_track_id for input into ML model or to reference selected song in the dataframe   
     if selected_track_id:
         st.write(f"Perform actions with the selected track ID: {selected_track_id}")
         selected_song_info = spotify_data[spotify_data['track_id'] == selected_track_id]
