@@ -4,7 +4,7 @@ import string
 from unidecode import unidecode
 
 # import data
-spotify_data = pd.read_csv("spotify_data.csv")
+# spotify_data = pd.read_csv("spotify_data.csv")
 
 # text cleaning function
 def clean_text(text):
@@ -46,7 +46,9 @@ def find_top_matches(user_input, data, top_n=10):
     for match, score, index in top_matches:
         original_track_name = data.loc[index, 'track_name']
         artist_name = data.loc[index, 'artist_name']
+        track_id = data.loc[index, 'track_id']
         result_dict = {
+            'track_id': track_id,
             'original_track_name': original_track_name,
             'artist': artist_name,
             'similarity_score': score
@@ -76,12 +78,12 @@ def find_top_match(user_input, data):
 
 
 # testing it
-user_input_song = input("Enter a song name: ")
+# user_input_song = input("Enter a song name: ")
 
-top_results = find_top_matches(user_input_song, spotify_data)
-top_result = find_top_match(user_input_song, spotify_data)
+# top_results = find_top_matches(user_input_song, spotify_data)
+# top_result = find_top_match(user_input_song, spotify_data)
 
-# Print the top n results
+# # Print the top n results
 
-for result in top_results:
-    print(f"Match: {result['original_track_name']} | Artist: {result['artist']} | Similarity Score: {result['similarity_score']}")
+# for result in top_results:
+#     print(f"Match: {result['original_track_name']} | Artist: {result['artist']} | Similarity Score: {result['similarity_score']}")
