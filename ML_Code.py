@@ -4,8 +4,8 @@
 # In[1]:
 
 
-from google.colab import drive
-drive.mount('/content/drive')
+#from google.colab import drive
+#drive.mount('/content/drive')
 
 
 # In[2]:
@@ -13,7 +13,7 @@ drive.mount('/content/drive')
 
 import pandas as pd
 
-df = pd.read_csv('/content/drive/MyDrive/Group Assignment Big Data/spotify_data.csv')
+df = pd.read_csv('spotify_data.csv')
 
 
 # In[3]:
