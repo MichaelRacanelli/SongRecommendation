@@ -16,8 +16,14 @@ with st.sidebar:
 spotify_data = pd.read_csv("spotify_data.csv", index_col=0)
 
 @st.cache_data()
-def perform_fuzzy_matching(user_input, data):
-    return find_top_matches(user_input, data)
+def perform_fuzzy_matching(user_input, data, artist_name=None):
+    # Filter data based on the optional artist name
+    if artist_name:
+        filtered_data = data[data['artist_name'].str.contains(artist_name, case=False, na=False)]
+    else:
+        filtered_data = data
+    
+    return find_top_matches(user_input, filtered_data)
 
 def main():
     # Streamlit app title header
@@ -31,8 +37,11 @@ def main():
 
     # Actions to be performed when the user inputs a song in the search box
     if user_input_song:
+        # Optional: Widget for user input (artist name)
+        user_input_artist = st.text_input('Optional: Type in an artist name:', value='', key='artist_input', help='Type in an artist if you need to narrow down the search results')
+        
         # Generate fuzzy matching top results for search input
-        top_results = perform_fuzzy_matching(user_input_song, spotify_data)
+        top_results = perform_fuzzy_matching(user_input_song, spotify_data, artist_name=user_input_artist)
 
         # Create a list item of clean song, artist, and similarity score for displaying in the selectbox widget
         clean_results = [f"'{result['original_track_name']}' by {result['artist']} | Similarity Score: {result['similarity_score']}" for result in top_results]
@@ -58,4 +67,3 @@ def main():
         
 if __name__ == '__main__':
     main()
-  
