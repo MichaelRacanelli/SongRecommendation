@@ -239,48 +239,48 @@ outliers_df = df.join(df_outlier_treatment[numeric_columns], rsuffix="_treated")
 # In[21]:
 
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
-for column in numeric_columns:
-  treated = column + "_treated"
-  print("Outliers for ", column)
-  plt.figure()
-  outliers_df.boxplot(column= [column, treated], grid=False, figsize=(6,3))
-  plt.show()
+# for column in numeric_columns:
+#   treated = column + "_treated"
+#   print("Outliers for ", column)
+#   plt.figure()
+#   outliers_df.boxplot(column= [column, treated], grid=False, figsize=(6,3))
+#   plt.show()
 
 
 # In[22]:
 
 
-get_ipython().system('pip install seaborn')
+# get_ipython().system('pip install seaborn')
 
 
 # In[23]:
 
 
-import seaborn as sns
-import pandas as pd
-import matplotlib.pyplot as plt
+# import seaborn as sns
+# import pandas as pd
+# import matplotlib.pyplot as plt
 
-# Define your string columns
-stringColumns = ['artist_name', 'track_name', 'track_id', 'genre']
+# # Define your string columns
+# stringColumns = ['artist_name', 'track_name', 'track_id', 'genre']
 
-# Drop non-numeric columns
-numeric_df = df.drop(columns=stringColumns)
+# # Drop non-numeric columns
+# numeric_df = df.drop(columns=stringColumns)
 
-# Compute the correlation matrix
-corr_mat_df = numeric_df.corr(method='pearson')
+# # Compute the correlation matrix
+# corr_mat_df = numeric_df.corr(method='pearson')
 
-# Visualize the correlation matrix
-plt.figure(figsize=(16, 5))
-sns.heatmap(corr_mat_df, xticklabels=corr_mat_df.columns, yticklabels=corr_mat_df.columns, cmap="Greens", annot=True)
-plt.show()
+# # Visualize the correlation matrix
+# plt.figure(figsize=(16, 5))
+# sns.heatmap(corr_mat_df, xticklabels=corr_mat_df.columns, yticklabels=corr_mat_df.columns, cmap="Greens", annot=True)
+# plt.show()
 
 
 # In[24]:
 
 
-get_ipython().system('pip install scikit-learn')
+# get_ipython().system('pip install scikit-learn')
 
 
 # In[25]:
@@ -324,4 +324,4 @@ def recommend_songs(song_index, top_n=10):
 # Example usage
 recommended_songs = recommend_songs(0, top_n=5)
 
-
+print(recommend_songs)
