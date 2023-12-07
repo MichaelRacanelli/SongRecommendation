@@ -1,6 +1,6 @@
-import subprocess
+import os
 
-subprocess.run(["pip", "install", "rapidfuzz"]) 
+os.system("pip install rapidfuzz")  
 
 from rapidfuzz import process
 import string
