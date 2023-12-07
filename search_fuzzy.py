@@ -1,4 +1,6 @@
-!pip install rapidfuzz
+import subprocess
+
+subprocess.run(["pip", "install", "rapidfuzz"]) 
 
 from rapidfuzz import process
 import string
