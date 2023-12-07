@@ -1,3 +1,5 @@
+!pip install rapidfuzz
+
 from rapidfuzz import process
 import string
 from unidecode import unidecode
