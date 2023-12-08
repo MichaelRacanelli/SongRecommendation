@@ -1,23 +1,7 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
-#from google.colab import drive
-#drive.mount('/content/drive')
-
-
-# In[2]:
-
 
 import pandas as pd
 
 df = pd.read_csv('spotify_data.csv')
-
-
-# In[3]:
-
 
 dtype_mapping = {
     "artist_name": "string",
@@ -43,37 +27,18 @@ dtype_mapping = {
 
 df = df.astype(dtype_mapping)
 
-
-# In[4]:
-
-
 print(df.head(5))
-
-
-# In[5]:
-
 
 column_names = df.columns.tolist()
 print(column_names)
 
-
-# In[6]:
-
-
 df.info()
-
-
-# In[7]:
-
 
 # Cast the columns
 df = df.astype(dtype_mapping)
 
 # Print the DataFrame's information to check the data types
 df.info()
-
-
-# In[8]:
 
 
 # Get unique values from the 'genre' column
@@ -83,9 +48,6 @@ genreRows = df['genre'].unique()
 print(genreRows)
 
 
-# In[9]:
-
-
 # Group by 'genre' and count the occurrences
 genre_counts = df.groupby('genre').size()
 
@@ -93,14 +55,8 @@ genre_counts = df.groupby('genre').size()
 print(genre_counts)
 
 
-# In[10]:
-
-
 total_rows = df.shape[0]
 print("Total rows:", total_rows)
-
-
-# In[11]:
 
 
 # Iterate over each column and print rows where the column value is null
@@ -110,14 +66,7 @@ for column in df.columns:
     print(null_rows)
 
 
-# In[12]:
-
-
 print(df.isna().sum())
-
-
-# In[13]:
-
 
 # Group by 'track_name' and 'artist_name', and count occurrences
 track_artist_counts = df.groupby(['track_name', 'artist_name']).size().reset_index(name='count')
@@ -128,19 +77,11 @@ repeated_tracks_artists = track_artist_counts[track_artist_counts['count'] > 1]
 # Display the result
 print(repeated_tracks_artists)
 
-
-# In[14]:
-
-
 # Drop duplicates based on 'artist_name' and 'track_name'
 df_unique = df.drop_duplicates(subset=['artist_name', 'track_name'])
 
 # Display the first few rows of the resulting DataFrame
 print(df_unique.head())
-
-
-# In[15]:
-
 
 def iqr_outlier_treatment(dataframe, columns, factor=1.5):
     """
@@ -165,10 +106,6 @@ def iqr_outlier_treatment(dataframe, columns, factor=1.5):
         dataframe = dataframe[(dataframe[column] >= lower_bound) & (dataframe[column] <= upper_bound)]
 
     return dataframe
-
-
-# In[16]:
-
 
 # Filter out rows where 'tempo' equals 0
 df_filtered = df[df['tempo'] > 0]
@@ -202,41 +139,22 @@ df_no_outliers['tempo_group'] = df_no_outliers['percentile_rank'].apply(categori
 # Display the results
 print(df_no_outliers.head())
 
-
-# In[17]:
-
-
 integerColumns = ["popularity", "year", "key", "mode", "duration_ms", "time_signature"]
 floatColumns = ["danceability", "energy", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"]
 
 print("Integer Columns:", integerColumns)
 print("Float Columns:", floatColumns)
 
-
-# In[18]:
-
-
 numeric_columns = integerColumns + floatColumns
 
 # Displaying the combined list
 print("Numeric Columns:", numeric_columns)
 
-
-# In[19]:
-
-
 df_outlier_treatment = iqr_outlier_treatment(df, numeric_columns, factor=1.5)
-
-
-# In[20]:
-
 
 # Joining the original DataFrame with the outlier-treated DataFrame
 # Assuming df and df_outlier_treatment are Pandas DataFrames
 outliers_df = df.join(df_outlier_treatment[numeric_columns], rsuffix="_treated")
-
-
-# In[21]:
 
 
 # import matplotlib.pyplot as plt
@@ -247,10 +165,6 @@ outliers_df = df.join(df_outlier_treatment[numeric_columns], rsuffix="_treated")
 #   plt.figure()
 #   outliers_df.boxplot(column= [column, treated], grid=False, figsize=(6,3))
 #   plt.show()
-
-
-# In[22]:
-
 
 # get_ipython().system('pip install seaborn')
 
@@ -276,23 +190,11 @@ outliers_df = df.join(df_outlier_treatment[numeric_columns], rsuffix="_treated")
 # sns.heatmap(corr_mat_df, xticklabels=corr_mat_df.columns, yticklabels=corr_mat_df.columns, cmap="Greens", annot=True)
 # plt.show()
 
-
-# In[24]:
-
-
 # get_ipython().system('pip install scikit-learn')
-
-
-# In[25]:
-
 
 # Check for missing values
 missing_values = df.isnull().sum()
 missing_values[missing_values > 0]
-
-
-# In[29]:
-
 
 import pandas as pd
 import numpy as np
