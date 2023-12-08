@@ -130,7 +130,7 @@ def main():
     if st.session_state["selected_track_id"] is not None:
         # Display information about the selected song using extracted song ID, can use selected_track_id for input into ML model or to reference selected song in the dataframe   
         selected_song_info = spotify_data_cleaned[spotify_data_cleaned['track_id'] == st.session_state["selected_track_id"]]
-        st.write(selected_song_info[['track_name', 'artist_name', 'year', 'genre']].squeeze())
+        st.write(selected_song_info[['track_name', 'artist_name', 'genre']].squeeze())
         st.session_state["button_disabled"] = False
     else:
         st.session_state["button_disabled"] = True
@@ -142,7 +142,7 @@ def main():
             # Display both song and artist information
             recommended_songs_df = model.recommend_songs(st.session_state["selected_track_id"])
             st.session_state['recommended_df'] = recommended_songs_df
-            x.write(st.session_state['recommended_df'][['track_name', 'artist_name', 'year', 'genre']].squeeze())
+            x.write(st.session_state['recommended_df'][['track_name', 'artist_name', 'genre']].squeeze())
 
     def clear_recommendations():
         st.session_state["recommended_df"] = None
