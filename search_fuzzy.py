@@ -42,7 +42,7 @@ def find_top_matches(user_input, data, top_n=10):
     # Prepare results as a list of dictionaries with track name, artist name, and similarity score
     # we can add more fields as we want
     results = []
-    for match, score, index in top_matches:
+    for _, score, index in top_matches:
         original_track_name = data.loc[index, 'track_name']
         artist_name = data.loc[index, 'artist_name']
         track_id = data.loc[index, 'track_id']

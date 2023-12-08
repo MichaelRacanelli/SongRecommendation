@@ -23,6 +23,7 @@ def perform_fuzzy_matching(user_input, data, artist_name=None):
     else:
         filtered_data = data
     
+    print("GABRIELA LOGS user_input " + user_input)
     return find_top_matches(user_input, filtered_data)
 
 def main():
