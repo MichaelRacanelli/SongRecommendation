@@ -22,21 +22,8 @@ zip_file_path = "spotify_data.zip"
 def load_data(zip_file_path):
     with zipfile.ZipFile(zip_file_path, 'r') as zip_file:
         csv_file_name = next(name for name in zip_file.namelist() if name.endswith('.csv'))
-        data = pd.read_csv(zip_file.open(csv_file_name), index_col=0)
-    return data
-
-# Call the data loading function
-spotify_data = load_data("spotify_data.zip")
-
-# # Create a ZipFile object
-# with zipfile.ZipFile(zip_file_path, 'r') as zip_file:
-#     # Assuming there's only one CSV file in the ZIP file
-#     csv_file_name = next(name for name in zip_file.namelist() if name.endswith('.csv'))
-
-#     # Read the CSV file into a DataFrame with the first column as the index
-#     spotify_data = pd.read_csv(zip_file.open(csv_file_name), index_col=0)
-
-dtype_mapping = {
+        spotify_data = pd.read_csv(zip_file.open(csv_file_name), index_col=0)
+    dtype_mapping = {
     "artist_name": "string",
     "track_name": "string",
     "track_id": "string",
@@ -56,26 +43,30 @@ dtype_mapping = {
     "tempo": "float",
     "duration_ms": "float",
     "time_signature": "int"
-}
+    }
 
-spotify_data = spotify_data.astype(dtype_mapping)
+    spotify_data = spotify_data.astype(dtype_mapping)
 
-# Assuming the numerical columns are the ones that need outlier removal
-numerical_columns = spotify_data.select_dtypes(include=['float64', 'int64']).columns.tolist()
+    # Assuming the numerical columns are the ones that need outlier removal
+    numerical_columns = spotify_data.select_dtypes(include=['float64', 'int64']).columns.tolist()
 
-# Function to remove outliers using IQR method
-def remove_outliers(df, columns):
-    for column in columns:
-        Q1 = df[column].quantile(0.25)
-        Q3 = df[column].quantile(0.75)
-        IQR = Q3 - Q1
-        lower_bound = Q1 - 1.5 * IQR
-        upper_bound = Q3 + 1.5 * IQR
-        df = df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
-    return df
+    # Function to remove outliers using IQR method
+    def remove_outliers(df, columns):
+        for column in columns:
+            Q1 = df[column].quantile(0.25)
+            Q3 = df[column].quantile(0.75)
+            IQR = Q3 - Q1
+            lower_bound = Q1 - 1.5 * IQR
+            upper_bound = Q3 + 1.5 * IQR
+            df = df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
+        return df
 
-# Remove outliers
-spotify_data_cleaned = remove_outliers(spotify_data, numerical_columns)
+    # Remove outliers
+    spotify_data_cleaned = remove_outliers(spotify_data, numerical_columns)
+    return spotify_data_cleaned
+
+# Call the data loading function
+spotify_data_cleaned = load_data("spotify_data.zip")
 
 model = Model(spotify_data_cleaned)
 
