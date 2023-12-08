@@ -3,6 +3,7 @@ import pandas as pd
 from PIL import Image
 from search_fuzzy import find_top_matches
 from model import Model
+import zipfile
 
 image = Image.open('spotify.jpg')
 
@@ -14,7 +15,16 @@ with st.sidebar:
     st.header("Image Credit")
     st.text("Photo by David Pupăză Unsplash")
 
-spotify_data = pd.read_csv("spotify_data.csv", index_col=0)
+# Specify the path to your ZIP file
+zip_file_path = "spotify_data.zip"
+
+# Create a ZipFile object
+with zipfile.ZipFile(zip_file_path, 'r') as zip_file:
+    # Assuming there's only one CSV file in the ZIP file
+    csv_file_name = next(name for name in zip_file.namelist() if name.endswith('.csv'))
+
+    # Read the CSV file into a DataFrame with the first column as the index
+    spotify_data = pd.read_csv(zip_file.open(csv_file_name), index_col=0)
 
 dtype_mapping = {
     "artist_name": "string",
