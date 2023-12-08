@@ -6,9 +6,11 @@ from unidecode import unidecode
 # spotify_data = pd.read_csv("spotify_data.csv")
 
 # text cleaning function
-def clean_text(text):
+def clean_text(user_input):
+    string_input = str(user_input)
+
     # Convert to lowercase
-    text = text.lower()
+    text = string_input.lower()
     
     # Convert special characters to closest ASCII equivalents
     text = unidecode(text)
@@ -33,7 +35,8 @@ def clean_text(text):
 
 def find_top_matches(user_input, data, top_n=10):
     # clean user_input
-    cleaned_user_input = clean_text(user_input)
+    string_input = "" + user_input
+    cleaned_user_input = clean_text(string_input)
     
     # Use rapidfuzz's process.extract function to find the top matches
     # I apply the clean_text function to the spotify data to remove the uppercase letters before comparing
@@ -60,7 +63,8 @@ def find_top_matches(user_input, data, top_n=10):
 # same function, but returns only the top match
 def find_top_match(user_input, data):
     # clean user_input
-    cleaned_user_input = clean_text(user_input)
+    string_input = "" + user_input
+    cleaned_user_input = clean_text(string_input)
     
     # Use rapidfuzz's process.extract function to find the top matches
     # I apply the clean_text function to the spotify data to remove the uppercase letters before comparing
