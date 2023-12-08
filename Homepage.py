@@ -71,9 +71,7 @@ model = Model(spotify_data_cleaned)
 
 model.prepare_model()
 
-@st.cache_data()
 def perform_fuzzy_matching(user_input, data, artist_name=None):
-    st.session_state["recommended_df"] = None
     # Filter data based on the optional artist name
     if artist_name:
         filtered_data = data[data['artist_name'].str.contains(artist_name, case=False, na=False)]
@@ -82,84 +80,46 @@ def perform_fuzzy_matching(user_input, data, artist_name=None):
     
     return find_top_matches(user_input, filtered_data)
 
+# Streamlit app title header
+st.title('Song Finder')
 
-if "button_disabled" not in st.session_state:
-    st.session_state["button_disabled"] = True
+# Widget for user input (song name)
+user_input_song = st.text_input('Type in a song name:', value='', key='song_input', help='Fuzzy Matching will generate the closest matches')
 
-if "recommended_df" not in st.session_state:
-    st.session_state["recommended_df"] = None
+# Placeholder for selected track ID
+selected_track_id = None
 
-if "selected_track_id" not in st.session_state:
-    st.session_state["selected_track_id"] = None
+# Actions to be performed when the user inputs a song in the search box
+if user_input_song:
+    # Optional: Widget for user input (artist name)
+    user_input_artist = st.text_input('Optional: Type in an artist name:', value='', key='artist_input', help='Type in an artist if you need to narrow down the search results')
+    
+    # Generate fuzzy matching top results for search input
+    top_results = perform_fuzzy_matching(user_input_song, spotify_data_cleaned, artist_name=user_input_artist)
 
-def main():
-    # Streamlit app title header
-    st.title('Song Finder')
+    # Create a list item of clean song, artist, and similarity score for displaying in the selectbox widget
+    clean_results = [f"'{result['original_track_name']}' by {result['artist']} | Similarity Score: {result['similarity_score']}" for result in top_results]
 
-    # Widget for user input (song name)
-    user_input_song = st.text_input('Type in a song name:', value='', key='song_input', help='Fuzzy Matching will generate the closest matches')
-
-    # Placeholder for selected track ID
-    # selected_track_id = None
-
-    # Actions to be performed when the user inputs a song in the search box
-    if user_input_song:
-        # Optional: Widget for user input (artist name)
-        user_input_artist = st.text_input('Optional: Type in an artist name:', value='', key='artist_input', help='Type in an artist if you need to narrow down the search results')
-        
-        # Generate fuzzy matching top results for search input
-        top_results = perform_fuzzy_matching(user_input_song, spotify_data_cleaned, artist_name=user_input_artist)
-
-        # Create a list item of clean song, artist, and similarity score for displaying in the selectbox widget
-        clean_results = [f"'{result['original_track_name']}' by {result['artist']} | Similarity Score: {result['similarity_score']}" for result in top_results]
-
-        # Display the clean search results as a clickable list with both song and artist names with similarity score
-        st.subheader('Select a song:')
-        selected_song_index = st.selectbox('Choose the song you are looking for from the closest results:', 
-                                        range(len(clean_results)),  # Use range(len(clean_results)) as the options
-                                        format_func=lambda x: clean_results[x],  # Display clean_results in the dropdown
-                                        index=0, 
-                                        key='selected_song')
-        
-        # Extract the track ID from the selected result
-        if selected_song_index is not None:
-            st.session_state["selected_track_id"] = top_results[selected_song_index]['track_id']
-        else:
-            st.session_state["recommended_df"] = None
-
-    if st.session_state["selected_track_id"] is not None:
-        # Display information about the selected song using extracted song ID, can use selected_track_id for input into ML model or to reference selected song in the dataframe   
-        selected_song_info = spotify_data_cleaned[spotify_data_cleaned['track_id'] == st.session_state["selected_track_id"]]
+    # Display the clean search results as a clickable list with both song and artist names with similarity score
+    st.subheader('Select a song:')
+    selected_song_index = st.selectbox('Choose the song you are looking for from the closest results:', 
+                                    range(len(clean_results)),  # Use range(len(clean_results)) as the options
+                                    format_func=lambda x: clean_results[x],  # Display clean_results in the dropdown
+                                    index=0, 
+                                    key='selected_song')
+    
+    # Extract the track ID from the selected result
+    if selected_song_index is not None:
+        selected_track_id = top_results[selected_song_index]['track_id']
+        # Display information about the selected song using extracted song ID
+        selected_song_info = spotify_data_cleaned[spotify_data_cleaned['track_id'] == selected_track_id]
         st.write(selected_song_info[['track_name', 'artist_name', 'genre']].squeeze())
-        st.session_state["button_disabled"] = False
-    else:
-        st.session_state["button_disabled"] = True
 
+# Buttons to generate and clear recommendations
+if selected_track_id is not None:
+    if st.button('Generate Recommendations'):
+        recommended_songs_df = model.recommend_songs(selected_track_id)
+        st.write(recommended_songs_df[['track_name', 'artist_name', 'genre']].squeeze())
 
-    def get_recommendations():
-        print("get_recommendations")
-        if st.session_state["selected_track_id"] is not None:
-            # Display both song and artist information
-            recommended_songs_df = model.recommend_songs(st.session_state["selected_track_id"])
-            st.session_state['recommended_df'] = recommended_songs_df
-            x.write(st.session_state['recommended_df'][['track_name', 'artist_name', 'genre']].squeeze())
-
-    def clear_recommendations():
-        st.session_state["recommended_df"] = None
-
-    st.button('Generate recommendation',
-              on_click=get_recommendations,
-              disabled=st.session_state["button_disabled"])
-    
-    st.button('Clear recommendation',
-              on_click=clear_recommendations,
-              disabled=st.session_state["button_disabled"])
-    
-
-    x = st.empty()
-    if st.session_state['recommended_df'] is not None:
-        x.write(st.session_state['recommended_df'][['track_name', 'artist_name', 'year', 'genre']].squeeze())
-
-        
-if __name__ == '__main__':
-    main()
+    if st.button('Clear Recommendations'):
+        selected_track_id = None
