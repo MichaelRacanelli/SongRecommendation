@@ -18,13 +18,23 @@ with st.sidebar:
 # Specify the path to your ZIP file
 zip_file_path = "spotify_data.zip"
 
-# Create a ZipFile object
-with zipfile.ZipFile(zip_file_path, 'r') as zip_file:
-    # Assuming there's only one CSV file in the ZIP file
-    csv_file_name = next(name for name in zip_file.namelist() if name.endswith('.csv'))
+@st.cache_data()
+def load_data(zip_file_path):
+    with zipfile.ZipFile(zip_file_path, 'r') as zip_file:
+        csv_file_name = next(name for name in zip_file.namelist() if name.endswith('.csv'))
+        data = pd.read_csv(zip_file.open(csv_file_name), index_col=0)
+    return data
 
-    # Read the CSV file into a DataFrame with the first column as the index
-    spotify_data = pd.read_csv(zip_file.open(csv_file_name), index_col=0)
+# Call the data loading function
+spotify_data = load_data("spotify_data.zip")
+
+# # Create a ZipFile object
+# with zipfile.ZipFile(zip_file_path, 'r') as zip_file:
+#     # Assuming there's only one CSV file in the ZIP file
+#     csv_file_name = next(name for name in zip_file.namelist() if name.endswith('.csv'))
+
+#     # Read the CSV file into a DataFrame with the first column as the index
+#     spotify_data = pd.read_csv(zip_file.open(csv_file_name), index_col=0)
 
 dtype_mapping = {
     "artist_name": "string",
