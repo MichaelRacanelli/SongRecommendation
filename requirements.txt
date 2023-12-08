@@ -3,4 +3,3 @@ unidecode
 scikit-learn
 scipy
 matplotlib
-zipfile
