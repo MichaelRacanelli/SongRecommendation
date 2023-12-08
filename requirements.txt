@@ -1,2 +1,5 @@
 rapidfuzz
 unidecode
+scikit-learn
+scipy
+matplotlib
