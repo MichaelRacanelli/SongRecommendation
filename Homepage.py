@@ -68,9 +68,13 @@ def load_data(zip_file_path):
 # Call the data loading function
 spotify_data_cleaned = load_data("spotify_data.zip")
 
-model = Model(spotify_data_cleaned)
+@st.cache_data()
+def prepare_model(data):
+    model = Model(data)
+    model.prepare_model()
+    return model
 
-model.prepare_model()
+model = prepare_model(spotify_data_cleaned)
 
 def perform_fuzzy_matching(user_input, data, artist_name=None):
     # Filter data based on the optional artist name
