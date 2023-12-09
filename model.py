@@ -12,12 +12,12 @@ class Model:
     def prepare_model(self):
         # Preprocessing: Label encode genres and normalize tempo
         label_encoder = LabelEncoder()
-        genres_encoded = label_encoder.fit_transform(self.dataset['genre']).reshape(-1, 1)
+        genres_encoded = label_encoder.fit_transform(self.dataset['genre'])
         scaler = MinMaxScaler()
         tempo_normalized = scaler.fit_transform(self.dataset[['tempo']])
 
         # Combine features without one-hot encoding
-        self.features = np.hstack((genres_encoded, tempo_normalized))
+        self.features = np.hstack((genres_encoded.reshape(-1, 1), tempo_normalized))
 
    
     # Simplify the recommendation by using a basic similarity metric
@@ -25,10 +25,23 @@ class Model:
 
     # Example usage
     # recommended_songs = recommend_songs('some_song_id', top_n=5)
-    def recommend_songs(self, song_id, top_n=10):
-        # Find the index of the song with the given ID
-        song_index = self.dataset[self.dataset['track_id'] == song_id].index[0]
+    def recommend_songs(self, track_id, top_n=10):
+        if track_id not in self.dataset['track_id'].values:
+            return "Track id not found in the dataset."
 
-        distances = cdist([self.features[song_index]], self.features, 'euclidean')
-        top_indices = np.argsort(distances[0])[:top_n]
-        return self.dataset.iloc[top_indices]
+        # Find the genre of the song with the given track name
+        song_genre = self.dataset[self.dataset['track_id'] == track_id]['genre'].iloc[0]
+
+        # Filter songs that match the genre
+        genre_matched_df = self.dataset[self.dataset['genre'] == song_genre]
+
+        # Get the tempo of the input song
+        song_tempo = self.dataset[self.dataset['track_id'] == track_id]['tempo'].iloc[0]
+
+        # Compute the absolute difference in tempos
+        genre_matched_df['tempo_diff'] = abs(genre_matched_df['tempo'] - song_tempo)
+
+        # Sort by tempo difference and select top_n
+        recommendations = genre_matched_df.sort_values('tempo_diff').head(top_n)
+
+        return recommendations[['track_name', 'artist_name', 'genre', 'tempo', 'popularity', 'year', 'danceability', 'energy', 'loudness']]
